@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooming Heart with Falling Hearts</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Hide scrollbars */
+            height: 100vh;
+            background-color: #fce4ec; /* Light pink background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* A playful font */
+            position: relative; /* For falling hearts positioning */
+        }
+
+        /* --- Concentric Heart Container --- */
+        #concentric-heart-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Animation for zooming */
+            animation: zoomHeart 4s ease-in-out infinite alternate;
+        }
+
+        /* Keyframes for the zooming animation */
+        @keyframes zoomHeart {
+            0% { transform: scale(0.8); }
+            100% { transform: scale(1.1); }
+        }
+
+        /* --- Individual Heart Layers --- */
+        .heart-layer {
+            position: absolute;
+            background-color: transparent; /* Default, will be overridden */
+            border-radius: 50%; /* For the rounded parts of the heart */
+            transform: rotate(-45deg); /* To form the heart shape */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .heart-layer::before,
+        .heart-layer::after {
+            content: '';
+            position: absolute;
+            background-color: inherit; /* Inherit color from parent */
+            border-radius: 50%;
+        }
+
+        /* Size and position for the heart's top lobes */
+        .heart-layer::before { top: -50%; left: 0; }
+        .heart-layer::after { left: 50%; top: 0; }
+
+        /* Specific styles for each layer to create the concentric effect */
+        /* Layer 1 - Outermost */
+        #heart-layer-1 { width: 400px; height: 400px; background-color: #ffc0cb; /* Light Pink */ }
+        #heart-layer-1::before, #heart-layer-1::after { width: 400px; height: 400px; }
+
+        /* Layer 2 */
+        #heart-layer-2 { width: 320px; height: 320px; background-color: #ff99aa; /* Medium Pink */ }
+        #heart-layer-2::before, #heart-layer-2::after { width: 320px; height: 320px; }
+
+        /* Layer 3 */
+        #heart-layer-3 { width: 240px; height: 240px; background-color: #ff6688; /* Darker Pink */ }
+        #heart-layer-3::before, #heart-layer-3::after { width: 240px; height: 240px; }
+
+        /* Layer 4 */
+        #heart-layer-4 { width: 160px; height: 160px; background-color: #ff3355; /* Even Darker Pink */ }
+        #heart-layer-4::before, #heart-layer-4::after { width: 160px; height: 160px; }
+
+        /* Layer 5 - Innermost */
+        #heart-layer-5 { width: 80px; height: 80px; background-color: #ff0033; /* Reddish Pink */ }
+        #heart-layer-5::before, #heart-layer-5::after { width: 80px; height: 80px; }
+
+        /* --- "I Love You!" Message --- */
+        #message {
+            position: absolute;
+            font-size: 2em; /* Initial size */
+            color: white;
+            font-weight: bold;
+            z-index: 100; /* Ensure it's on top */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            /* This animation will make it zoom along with the hearts */
+            animation: zoomMessage 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes zoomMessage {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.3); }
+        }
+
+        /* --- Falling Hearts --- */
+        .falling-heart {
+            position: absolute;
+            width: 30px; /* Small heart size */
+            height: 30px;
+            background-color: red; /* Red color for falling hearts */
+            transform: rotate(-45deg);
+            opacity: 0; /* Hidden initially */
+            pointer-events: none; /* Do not block clicks/hovers */
+            z-index: 1; /* Below the main heart */
+            
+            /* Shapes for the falling heart */
+            animation: fadeAndFall 5s linear forwards; /* Animation name, duration, timing, fill mode */
+        }
+
+        .falling-heart::before,
+        .falling-heart::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            border-radius: 50%;
+        }
+
+        .falling-heart::before { top: -50%; left: 0; }
+        .falling-heart::after { left: 50%; top: 0; }
+
+        /* Keyframes for falling and fading animation */
+        @keyframes fadeAndFall {
+            0% {
+                transform: translateY(-10vh) scale(0.5) rotate(-45deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh) scale(1) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="concentric-heart-container">
+        <div id="heart-layer-1" class="heart-layer"></div>
+        <div id="heart-layer-2" class="heart-layer"></div>
+        <div id="heart-layer-3" class="heart-layer"></div>
+        <div id="heart-layer-4" class="heart-layer"></div>
+        <div id="heart-layer-5" class="heart-layer"></div>
+        <span id="message">Hi miss shyy:></span>
+    </div>
+
+    <script>
+        // --- JavaScript for falling hearts ---
+        const body = document.body;
+
+        function createFallingHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('falling-heart');
+
+            // Random starting position (x-axis)
+            heart.style.left = `${Math.random() * 100}vw`;
+            // Random animation delay for staggered falling
+            heart.style.animationDelay = `${Math.random() * 3}s`;
+
+            body.appendChild(heart);
+
+            // Remove heart after animation finishes to prevent DOM clutter
+            heart.addEventListener('animationend', () => {
+                heart.remove();
+            });
+        }
+
+        // Generate a new falling heart every 300 milliseconds
+        setInterval(createFallingHeart, 300);
+
+        // Optional: Generate an initial burst of hearts on load
+        for (let i = 0; i < 10; i++) {
+            createFallingHeart();
+        }
+
+    </script>
+    <!-- Background audio with Enable sound button -->
+    <div id="audio-controls" style="position: absolute; bottom: 12px; right: 12px; z-index: 300;">
+        <button id="enable-audio" style="background:#ff3366;color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.2);">Enable sound</button>
+    </div>
+
+    <audio id="bg-audio" src="bg.mp4" autoplay loop preload="auto" style="display:none"></audio>
+
+    <script>
+        // Enable sound button toggles audio playback. If autoplay succeeds,
+        // the button will show "Disable sound" so user can mute.
+        window.addEventListener('load', () => {
+            const audio = document.getElementById('bg-audio');
+            const btn = document.getElementById('enable-audio');
+            if (!audio || !btn) return;
+
+            function updateButton() {
+                if (audio.paused) btn.textContent = 'Enable sound';
+                else btn.textContent = 'Disable sound';
+            }
+
+            // Try autoplay; if blocked the audio will remain paused and button lets user start it.
+            audio.play().then(() => {
+                updateButton();
+            }).catch(() => {
+                // Autoplay blocked — ensure button lets user enable sound
+                updateButton();
+            });
+
+            btn.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play().then(() => updateButton()).catch(() => {});
+                } else {
+                    audio.pause();
+                    updateButton();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
